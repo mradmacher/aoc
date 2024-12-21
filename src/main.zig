@@ -58,7 +58,6 @@ fn computeSimilarity(items: []u32, occurrences: *std.AutoHashMap(u32, u32)) u32 
     return sum;
 }
 
-
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     const allocator = gpa.allocator();
@@ -83,15 +82,15 @@ const expect = std.testing.expect;
 const expectEqual = std.testing.expectEqual;
 
 test "part 1" {
-    var left_items = [_]u32 {3, 4, 2, 1, 3, 3};
-    var right_items = [_]u32 {4, 3, 5, 3, 9, 3};
+    var left_items = [_]u32{ 3, 4, 2, 1, 3, 3 };
+    var right_items = [_]u32{ 4, 3, 5, 3, 9, 3 };
 
     try expectEqual(11, computeDistance(&left_items, &right_items));
 }
 
 test "part 2" {
-    var left_items = [_]u32 {3, 4, 2, 1, 3, 3};
-    var right_items = [_]u32 {4, 3, 5, 3, 9, 3};
+    var left_items = [_]u32{ 3, 4, 2, 1, 3, 3 };
+    var right_items = [_]u32{ 4, 3, 5, 3, 9, 3 };
 
     var occurrences = std.AutoHashMap(u32, u32).init(std.testing.allocator);
     defer occurrences.deinit();
