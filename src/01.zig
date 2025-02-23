@@ -70,7 +70,7 @@ pub fn main() !void {
     defer left_list.deinit();
     defer right_list.deinit();
 
-    try loadLists(&left_list, &right_list, "./data/01");
+    try loadLists(&left_list, &right_list, "./input/01");
 
     std.debug.print("Distance: {d}\n", .{try computeDistance(left_list.items, right_list.items)});
 
