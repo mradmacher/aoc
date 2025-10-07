@@ -1,11 +1,7 @@
-#include <regex.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-enum op_mode {
-  DONT, DO, ALL
-};
+#include "aoc03.h"
 
 regex_t rx;
 regex_t dorx;
@@ -91,28 +87,29 @@ unsigned long sum_mul(char *string, enum op_mode *mode) {
   return result;
 }
 
-// Example: xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))
-// 1: 174336360
-// 2: 88802350
-
-int main() {
-  if (regcomp(&rx, "mul\\(([0-9]{1,3}),([0-9]{1,3})\\)", REG_EXTENDED) != 0) {
+int find_aoc03_result(int step) {
+  if (regcomp(&rx, MUL_REGEX, REG_EXTENDED) != 0) {
     printf("Compilation error 1.");
     return 1;
   }
-  if (regcomp(&dorx, "do\\(\\)", REG_EXTENDED) != 0) {
+  if (regcomp(&dorx, DO_REGEX, REG_EXTENDED) != 0) {
     printf("Compilation error 2.");
     return 2;
   }
-  if (regcomp(&dontrx, "don't\\(\\)", REG_EXTENDED) != 0) {
+  if (regcomp(&dontrx, DONT_REGEX, REG_EXTENDED) != 0) {
     printf("Compilation error 3.");
     return 3;
   }
 
   FILE *fptr;
   size_t size = 10000;
-  char *string[10000];
-  enum op_mode mode = DO;
+  char string[10000];
+  enum op_mode mode;
+  if (step == 1) {
+    mode = ALL;
+  } else {
+    mode = DO;
+  }
 
   fptr = fopen("input/03", "r");
   unsigned int result = 0;
@@ -126,4 +123,6 @@ int main() {
   regfree(&rx);
   regfree(&dorx);
   regfree(&dontrx);
+
+  return result;
 }
