@@ -11,49 +11,55 @@ int xmascmp(char *str) {
   return -1;
 }
 
+int x_mascmp(char *str) {
+  if (strcmp("MAS", str) == 0 || strcmp("SAM", str) == 0) {
+    return 0;
+  }
+  return -1;
+}
+
 int count_xmas(const char data[BUFFER_SIZE][BUFFER_SIZE], size_t size) {
   int count = 0;
-  const int len = 4;
+  const int len = 4; //xmas
   char buf[5];
+  buf[len] = '\0';
 
   for (int row = 0; row < size; row++) {
-    for (int j = 0; j <= size - len; j++) {
-      for (int n = 0; n < len; n++) {
-        buf[n] = data[row][j + n];
+    for (int j = 0; j < size; j++) {
+
+      if (j <= size - len) {
+        for (int n = 0; n < len; n++) {
+          buf[n] = data[row][j + n];
+        }
+        if (xmascmp(buf) == 0) {
+          count++;
+        }
       }
-      buf[len] = '\0';
-      if (xmascmp(buf) == 0) {
-        count++;
-      }
-    }
-    if (row + len <= size) {
-      for (int j = 0; j < size; j++) {
+
+      if (row <= size - len) {
         for (int n = 0; n < len; n++) {
           buf[n] = data[row + n][j];
         }
-        buf[len] = '\0';
         if (xmascmp(buf) == 0) {
           count++;
         }
-      }
 
-      for (int j = 0; j <= size - len; j++) {
-        for (int n = 0; n < len; n++) {
-          buf[n] = data[row + n][j + n];
+        if (j <= size - len) {
+          for (int n = 0; n < len; n++) {
+            buf[n] = data[row + n][j + n];
+          }
+          if (xmascmp(buf) == 0) {
+            count++;
+          }
         }
-        buf[len] = '\0';
-        if (xmascmp(buf) == 0) {
-          count++;
-        }
-      }
 
-      for (int j = len - 1; j < size; j++) {
-        for (int n = 0; n < len; n++) {
-          buf[n] = data[row + n][j - n];
-        }
-        buf[len] = '\0';
-        if (xmascmp(buf) == 0) {
-          count++;
+        if (j >= len - 1) {
+          for (int n = 0; n < len; n++) {
+            buf[n] = data[row + n][j - n];
+          }
+          if (xmascmp(buf) == 0) {
+            count++;
+          }
         }
       }
     }
@@ -61,7 +67,31 @@ int count_xmas(const char data[BUFFER_SIZE][BUFFER_SIZE], size_t size) {
   return count;
 }
 
-int find_aoc04(void) {
+int count_x_mas(const char data[BUFFER_SIZE][BUFFER_SIZE], size_t size) {
+  int count = 0;
+  const int len = 3; //mas
+  char buf1[4];
+  char buf2[4];
+  buf1[len] = '\0';
+  buf2[len] = '\0';
+
+  for (int row = 0; row < size - len + 1; row++) {
+    for (int j = len - 2; j < size - len + 2; j++) {
+      for (int n = 0; n < len; n++) {
+        buf1[n] = data[row + n][j - 1 + n];
+      }
+      for (int n = 0; n < len; n++) {
+        buf2[n] = data[row + n][j + 1 - n];
+      }
+      if (x_mascmp(buf1) == 0 && x_mascmp(buf2) == 0) {
+        count++;
+      }
+    }
+  }
+  return count;
+}
+
+int find_aoc04(int step) {
   FILE *fptr;
   size_t size = 0;
   char matrix[BUFFER_SIZE][BUFFER_SIZE] = { { '\0' } };
@@ -77,7 +107,11 @@ int find_aoc04(void) {
   }
   fclose(fptr);
 
-  return count_xmas(matrix, size);
+  if (step == 1) {
+    return count_xmas(matrix, size);
+  }
+
+  return count_x_mas(matrix, size);
 }
 
 void test_count_xmas_returns_correct_value(void) {
@@ -99,13 +133,49 @@ void test_count_xmas_returns_correct_value(void) {
   assert(expected == actual);
 }
 
+void test_count_x_mas_returns_correct_value_for_one_x(void) {
+  const char example[BUFFER_SIZE][BUFFER_SIZE] = {
+    "M.S",
+    ".A.",
+    "M.S",
+  };
+  int expected = 1;
+  int actual = count_x_mas(example, 3);
+
+  assert(expected == actual);
+}
+
+void test_count_x_mas_returns_correct_value(void) {
+  const char example[BUFFER_SIZE][BUFFER_SIZE] = {
+    ".M.S......",
+    "..A..MSMS.",
+    ".M.S.MAA..",
+    "..A.ASMSM.",
+    ".M.S.M....",
+    "..........",
+    "S.S.S.S.S.",
+    ".A.A.A.A..",
+    "M.M.M.M.M.",
+    "..........",
+  };
+  int expected = 9;
+  int actual = count_x_mas(example, 10);
+
+  assert(expected == actual);
+}
+
 void test_aoc04_returns_correct_results(void) {
-  assert(2358 == find_aoc04());
+  assert(2358 == find_aoc04(1));
+  assert(1737 == find_aoc04(2));
 }
 
 void main() {
   test_count_xmas_returns_correct_value();
+  test_count_x_mas_returns_correct_value();
+  test_count_x_mas_returns_correct_value_for_one_x();
+
   test_aoc04_returns_correct_results();
 
-  printf("%d\n", find_aoc04());
+  printf("%d\n", find_aoc04(1));
+  printf("%d\n", find_aoc04(2));
 }
