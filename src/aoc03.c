@@ -1,7 +1,16 @@
+#include <regex.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "aoc03.h"
+#include <assert.h>
+
+#define MUL_REGEX "mul\\(([0-9]{1,3}),([0-9]{1,3})\\)"
+#define DO_REGEX "do\\(\\)"
+#define DONT_REGEX "don't\\(\\)"
+
+enum op_mode {
+  DONT, DO, ALL
+};
 
 regex_t rx;
 regex_t dorx;
@@ -72,7 +81,6 @@ unsigned long sum_mul(char *string, enum op_mode *mode) {
   if (*mode != ALL) {
     clear(string, mode);
   }
-  printf("%s\n", string);
   int offset = 0;
   while (offset > -1) {
     string = string + offset;
@@ -125,4 +133,68 @@ int find_aoc03_result(int step) {
   regfree(&dontrx);
 
   return result;
+}
+
+void test_find_numbers_extracts_numbers_from_first_instruction(regex_t *mul_regex) {
+  char *instructions = "xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))";
+  int expected[] = { 2, 4 };
+
+  int actual[2];
+  find_numbers(actual, instructions, mul_regex);
+
+  assert(expected[0] == actual[0]);
+  assert(expected[1] == actual[1]);
+}
+
+void test_find_numbers_returns_offset_after_first_instruction(regex_t *mul_regex) {
+  char *instructions = "xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))";
+  int numbers[2];
+  int expected = 9;
+
+  int actual = find_numbers(numbers, instructions, mul_regex);
+
+  assert(expected == actual);
+}
+
+void test_find_numbers_returns_nothing_for_empty_string(regex_t *mul_regex) {
+  char *instructions = "";
+  int numbers[2];
+  int expected = -1;
+
+  int actual = find_numbers(numbers, instructions, mul_regex);
+
+  assert(expected == actual);
+}
+
+void test_find_numbers_returns_nothing_for_string_without_instructions(regex_t *mul_regex) {
+  char *instructions = "&mul[3,7]!^don't()_mul[5,5)+mul(32,64](mul<11,8>undo()?mul/8,5/)";
+  int numbers[2];
+  int expected = -1;
+
+  int actual = find_numbers(numbers, instructions, mul_regex);
+
+  assert(expected == actual);
+}
+
+void test_aoc03_returns_correct_results(void) {
+  assert(174336360 == find_aoc03_result(1));
+  assert(88802350 == find_aoc03_result(2));
+}
+
+void run_tests() {
+  regex_t mul_regex;
+  regcomp(&mul_regex, MUL_REGEX, REG_EXTENDED);
+
+  test_find_numbers_extracts_numbers_from_first_instruction(&mul_regex);
+  test_find_numbers_returns_offset_after_first_instruction(&mul_regex);
+  test_find_numbers_returns_nothing_for_empty_string(&mul_regex);
+  test_find_numbers_returns_nothing_for_string_without_instructions(&mul_regex);
+
+  test_aoc03_returns_correct_results();
+
+  regfree(&mul_regex);
+}
+
+int main(void) {
+  run_tests();
 }

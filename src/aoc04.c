@@ -1,6 +1,8 @@
+#include <assert.h>
 #include <stdio.h>
 #include <string.h>
-#include "aoc04.h"
+
+#define BUFFER_SIZE 200
 
 int xmascmp(char *str) {
   if (strcmp("XMAS", str) == 0 || strcmp("SAMX", str) == 0) {
@@ -76,4 +78,34 @@ int find_aoc04(void) {
   fclose(fptr);
 
   return count_xmas(matrix, size);
+}
+
+void test_count_xmas_returns_correct_value(void) {
+  const char example[BUFFER_SIZE][BUFFER_SIZE] = {
+    "MMMSXXMASM",
+    "MSAMXMSMSA",
+    "AMXSXMAAMM",
+    "MSAMASMSMX",
+    "XMASAMXAMM",
+    "XXAMMXXAMA",
+    "SMSMSASXSS",
+    "SAXAMASAAA",
+    "MAMMMXMMMM",
+    "MXMXAXMASX",
+  };
+  int expected = 18;
+  int actual = count_xmas(example, 10);
+
+  assert(expected == actual);
+}
+
+void test_aoc04_returns_correct_results(void) {
+  assert(2358 == find_aoc04());
+}
+
+void main() {
+  test_count_xmas_returns_correct_value();
+  test_aoc04_returns_correct_results();
+
+  printf("%d\n", find_aoc04());
 }
