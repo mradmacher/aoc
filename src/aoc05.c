@@ -211,7 +211,7 @@ void print_result(char *input) {
   FILE *fptr;
   char line[1000];
   fptr = fopen(input, "r");
-  assert(fptr != NULL);
+  assert(fptr != NULL && "File does not exist");
 
   int i = 0;
   while (fgets(line, 1000, fptr)) {
