@@ -95,7 +95,7 @@ unsigned long sum_mul(char *string, enum op_mode *mode) {
   return result;
 }
 
-int find_aoc03_result(int step) {
+int find_aoc03_result(char *input, int step) {
   if (regcomp(&rx, MUL_REGEX, REG_EXTENDED) != 0) {
     printf("Compilation error 1.");
     return 1;
@@ -119,12 +119,11 @@ int find_aoc03_result(int step) {
     mode = DO;
   }
 
-  fptr = fopen("input/03", "r");
+  fptr = fopen(input, "r");
   unsigned int result = 0;
   while (fgets(string, size, fptr)) {
     result += sum_mul(string, &mode);
   }
-  printf("Result: %d\n", result);
 
   fclose(fptr);
 
@@ -176,9 +175,9 @@ void test_find_numbers_returns_nothing_for_string_without_instructions(regex_t *
   assert(expected == actual);
 }
 
-void test_aoc03_returns_correct_results(void) {
-  assert(174336360 == find_aoc03_result(1));
-  assert(88802350 == find_aoc03_result(2));
+void print_result(char *input) {
+  printf("%d\n", find_aoc03_result(input, 1));
+  printf("%d\n", find_aoc03_result(input, 2));
 }
 
 void run_tests() {
@@ -190,11 +189,11 @@ void run_tests() {
   test_find_numbers_returns_nothing_for_empty_string(&mul_regex);
   test_find_numbers_returns_nothing_for_string_without_instructions(&mul_regex);
 
-  test_aoc03_returns_correct_results();
-
   regfree(&mul_regex);
 }
 
-int main(void) {
+void main(int argc, char **argv) {
   run_tests();
+
+  if (argc == 2) print_result(argv[1]);
 }

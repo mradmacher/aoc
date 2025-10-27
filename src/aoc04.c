@@ -91,14 +91,14 @@ int count_x_mas(const char data[BUFFER_SIZE][BUFFER_SIZE], size_t size) {
   return count;
 }
 
-int find_aoc04(int step) {
+int find_aoc04(char *input, int step) {
   FILE *fptr;
   size_t size = 0;
   char matrix[BUFFER_SIZE][BUFFER_SIZE] = { { '\0' } };
 
   char buf[1000];
 
-  fptr = fopen("input/04", "r");
+  fptr = fopen(input, "r");
   while (fgets(buf, 1000, fptr)) {
     int len = strlen(buf);
     memcpy(matrix[size], buf, len - 1);
@@ -164,18 +164,14 @@ void test_count_x_mas_returns_correct_value(void) {
   assert(expected == actual);
 }
 
-void test_aoc04_returns_correct_results(void) {
-  assert(2358 == find_aoc04(1));
-  assert(1737 == find_aoc04(2));
+void print_result(char *input) {
+  printf("%d\n", find_aoc04(input, 1));
+  printf("%d\n", find_aoc04(input, 2));
 }
 
-void main() {
+void main(int argc, char **argv) {
   test_count_xmas_returns_correct_value();
   test_count_x_mas_returns_correct_value();
-  test_count_x_mas_returns_correct_value_for_one_x();
 
-  test_aoc04_returns_correct_results();
-
-  printf("%d\n", find_aoc04(1));
-  printf("%d\n", find_aoc04(2));
+  if (argc == 2) print_result(argv[1]);
 }

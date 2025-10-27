@@ -202,9 +202,7 @@ void run_tests() {
   test_correct_middle_page();
 }
 
-void main() {
-  run_tests();
-
+void print_result(char *input) {
   int correct_result = 0;
   int corrected_result = 0;
 
@@ -212,7 +210,9 @@ void main() {
   rules_input_t rules_input;
   FILE *fptr;
   char line[1000];
-  fptr = fopen("input/05", "r");
+  fptr = fopen(input, "r");
+  assert(fptr != NULL);
+
   int i = 0;
   while (fgets(line, 1000, fptr)) {
     if (line[0] == '\n') {
@@ -233,9 +233,13 @@ void main() {
   }
 
   fclose(fptr);
-  assert(4135 == correct_result);
-  assert(5285 == corrected_result);
 
   printf("%d\n", correct_result);
   printf("%d\n", corrected_result);
+}
+
+void main(int argc, char **argv) {
+  run_tests();
+
+  if (argc == 2) print_result(argv[1]);
 }
