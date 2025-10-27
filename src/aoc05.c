@@ -77,17 +77,27 @@ void apply_rules(rules_t rules, rules_input_t input) {
   }
 }
 
+// Returns positive number if the order is correct,
+// otherwise negative number from corrected collection.
 int correct_middle_page(rules_t rules, char *string) {
+  int sign = 1;
   int update[BUFFER_SIZE];
   size_t n = split_update(update, string);
+
   for (int i = 0; i < n - 1; i++) {
     for (int j = i + 1; j < n; j++) {
       if (rules[update[i]][update[j]] == 0) {
-        return 0;
+        sign = -1;
+        int buf = update[i];
+        update[i] = update[j];
+        update[j] = buf;
+        i--;
+        break;
       }
     }
   }
-  return update[n/2];
+
+  return sign * update[n/2];
 }
 
 void test_apply_rules() {
@@ -179,10 +189,11 @@ void test_correct_middle_page() {
   assert(correct_middle_page(rules, example_updates[0]) == 61);
   assert(correct_middle_page(rules, example_updates[1]) == 53);
   assert(correct_middle_page(rules, example_updates[2]) == 29);
-  assert(correct_middle_page(rules, example_updates[3]) == 0);
-  assert(correct_middle_page(rules, example_updates[4]) == 0);
-  assert(correct_middle_page(rules, example_updates[5]) == 0);
+  assert(correct_middle_page(rules, example_updates[3]) == -47);
+  assert(correct_middle_page(rules, example_updates[4]) == -29);
+  assert(correct_middle_page(rules, example_updates[5]) == -47);
 }
+
 
 void run_tests() {
   test_split();
@@ -194,7 +205,8 @@ void run_tests() {
 void main() {
   run_tests();
 
-  int result = 0;
+  int correct_result = 0;
+  int corrected_result = 0;
 
   rules_t rules;
   rules_input_t rules_input;
@@ -212,11 +224,18 @@ void main() {
   apply_rules(rules, rules_input);
 
   while (fgets(line, 1000, fptr)) {
-    result += correct_middle_page(rules, line);
+    int result = correct_middle_page(rules, line);
+    if (result > 0) {
+      correct_result += result;
+    } else {
+      corrected_result += -result;
+    }
   }
 
   fclose(fptr);
-  assert(4135 == result);
+  assert(4135 == correct_result);
+  assert(5285 == corrected_result);
 
-  printf("%d\n", result);
+  printf("%d\n", correct_result);
+  printf("%d\n", corrected_result);
 }
